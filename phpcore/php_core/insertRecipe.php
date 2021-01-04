@@ -1,5 +1,6 @@
 <?php
 include_once('connects.php');
+
 $uid = "1";
 $recipe = $_POST['rname'];
 $type = $_POST['type'];
@@ -15,10 +16,44 @@ $stepCounter = $_POST['stepCounter'];
 $recID;
 $stepID;
 $kg = $_POST['kg'];
-$image = $_POST['image'];
 $date = date("Y-m-d");
 
-$string = "INSERT INTO recipe(recipe_name, main_ingr, type_ingr, user_id, rating, image,kilogram) VALUES ('$recipe','$type','$part','$uid',0,'$image','$kg')";
+
+if (isset($_FILES))
+{
+	$file = $_FILES['file'];
+	$fileName = $_FILES['file']['name'];
+	$fileTmpName = $_FILES['file']['tmp_name'];
+	$fileSize = $_FILES['file']['size'];
+	$fileError = $_FILES['file']['error'];
+	$fileType = $_FILES['file']['type'];
+
+	$fileExt = explode('.', $fileName);
+	$fileActualExt = strtolower(end($fileExt));
+
+
+		if($fileError === 0)
+		{
+			if($fileSize < 500000)
+			{
+				$fileNameNew = uniqid('',true).".".$fileActualExt;
+				$fileDestination = 'uploads/'.$fileNameNew;
+				move_uploaded_file($_FILES['file']['tmp_name'], $fileDestination);
+			}
+			else
+			{
+				echo "Your file is too big!";
+			}
+		}
+		else
+		{
+			echo "There was an error uploading your file";
+		}
+
+
+
+
+$string = "INSERT INTO recipe(recipe_name, main_ingr, type_ingr, user_id, rating, image,kilogram) VALUES ('$recipe','$type','$part','$uid',0,'$fileDestination','$kg')";
 echo $string;
 mysqli_query($con,$string);
 
@@ -48,5 +83,10 @@ for($i=0;$i<$ingCounter;$i++)
 }
 
 echo "<script type='text/javascript'>alert('Recipe Successfully Created');</script>";
-
+}
+else
+{
+	echo "<script type='text/javascript'>alert('No Image Found');</script>";
+}
 ?>
+

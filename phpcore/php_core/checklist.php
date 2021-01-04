@@ -128,6 +128,7 @@ ul li.checked::before {
   <option value="L">l</option>
   <option value="kg">kg</option>
   <option value="g">g</option>
+  <option value="pcs">pcs</option>
   </select>
   <span onclick="newElement()" class="addBtn">Add</span>
 </div>

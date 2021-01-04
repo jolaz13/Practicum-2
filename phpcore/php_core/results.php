@@ -21,7 +21,10 @@ if($main != "ALL")
 	$string .= "AND main_ingr='$main'";
 }
 
-$string .= " AND month(date_created) = '$month' AND year(date_created) = '$year'";
+if(!empty($date))
+{
+	$string .= " AND month(date_created) = '$month' AND year(date_created) = '$year'";
+}
 
 if($sort == 'recent')
 {

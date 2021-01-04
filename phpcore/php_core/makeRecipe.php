@@ -3,6 +3,7 @@
 <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <script>
 
+
  $(function() {
  	var ingCounter = 0;
  	var INGnames = [];
@@ -15,7 +16,8 @@
  	var type;
  	var part;
  	var time = [];
- 	var image;
+ 	var file;
+
 
  	$('#fish').hide();
  	$('#veg').hide();
@@ -99,7 +101,6 @@
 			part = $("#part").children("option:selected").val();
 		}
 
-		image = document.getElementById('image').value;
 		selingr = $("#ingr").children("option:selected").val();
   		$("#step1").hide();
   		$("#step2").show();
@@ -161,8 +162,8 @@
   		var rname = $("#rname").val();
   		var kg = $("#kg").val();
   		
-
-  		$("#make").load("insertRecipe.php", {
+  		
+  		/*$("#make").load("insertRecipe.php", {
            rname: rname, 
            type: selingr,
            part: part,
@@ -175,10 +176,35 @@
            stepIns: stepIns,
            timer: time,
            stepCounter: stepCounter,
-           image: image
+           file: image
 
-       });
+       });*/
+       var fd = new FormData();
+       file = $('#file')[0].files[0];
+       console.log(file);
+       fd.append('file',file);
+       fd.append('rname',rname);
+       fd.append('type',selingr);
+       fd.append('part',part);
+       fd.append('kg',kg);
+       fd.append('ingr',INGnames);
+       fd.append('amt',INGamt);
+       fd.append('meas',INGmeas);
+       fd.append('ingCounter', ingCounter);
+       fd.append('stepCap',stepCap);
+       fd.append('stepIns',stepIns);
+       fd.append('stepCounter', stepCounter);
   		
+       $.ajax({
+       		url: "insertRecipe.php",
+       		type:"post",
+       		data: fd,
+       		contentType: false,
+       		processData: false,
+       		success: function(response){
+       		$('#make').html(response);
+       		}
+       });
 
 
 	});
@@ -206,13 +232,35 @@
 		if(stepCounter==0)
 			$("#removeStep").hide();
 	});
+
+	$("#file").change(function() {
+  		readURL(this);
+  		//var tmp_name = document.getElementById("file").files[0].tmp_name;
+  		//console.log(tmp_name);
+	});
 });
+
+function readURL(input) {
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    
+    reader.onload = function(e) {
+      $('#blah').attr('src', e.target.result);
+    }
+    
+    reader.readAsDataURL(input.files[0]); // convert to base64 string
+  }
+}
+
 
 </script>
 </head>
 <body>
+
 <div id='make'>
+<form method="post" action="" enctype="multipart/form-data">
 <div id="step1">	
+
 Dish Name: <input id="rname" type="text"><br>
 Dish Type: 
 <select id='ingr'>
@@ -242,9 +290,10 @@ Cut:
 	Main Ingredient: <input id="veggie" type="text">
 </div>
 Kilograms: <input id ="kg" type="text"><br>
-Upload Image:<input type="file" id="image"><br>
+<img id="blah" src="#" alt="your image" /> <br>
+Upload Image:<input type="file" id="file" accept=".jpg, .jpeg, .png"><br>
 
-<input id="firstNext" type="submit" value="Next">
+<input id="firstNext" type="button" value="Next">
 </div>
 
 <div id='step2'>
@@ -264,7 +313,7 @@ Upload Image:<input type="file" id="image"><br>
 	<br>
 	</div>
 
-<input id="addingr" type="submit" value="Add More"> <input id="removeIngr" type="submit" value="Remove"><input id="secondNext" type="submit" value="Next">	
+<input id="addingr" type="button" value="Add More"> <input id="removeIngr" type="button" value="Remove"><input id="secondNext" type="button" value="Next">	
 </div>
 <div id='step3'>
 	<div id ='procedure'>
@@ -273,8 +322,9 @@ Upload Image:<input type="file" id="image"><br>
 	Instructions: <textarea id='text0'></textarea><br>
 	</div>
 
-	<input id="addSteps" type="submit" value="Add More"><input id="removeStep" type="submit" value="Remove"><input id="fin" type="submit" value="Finish">
+	<input id="addSteps" type="button" value="Add More"><input id="removeStep" type="button" value="Remove"><input id="fin" type="button" value="Finish">
 </div>
+</form>
 </div>
 </body>
 </html>
